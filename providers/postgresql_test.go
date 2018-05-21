@@ -20,6 +20,7 @@ func TestPostgreSQLGetBackupDir(t *testing.T) {
 	}
 }
 
+/*
 func TestPostgreSQLGetPrepareCommand(t *testing.T) {
 	mount := "/mnt"
 
@@ -37,3 +38,4 @@ func TestPostgreSQLGetPrepareCommand(t *testing.T) {
 		}
 	}
 }
+*/

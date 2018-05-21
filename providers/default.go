@@ -23,7 +23,12 @@ func (p *DefaultProvider) PrepareBackup() error {
 	return nil
 }
 
-// GetPrepareCommand returns the command to be executed before backup
-func (p *DefaultProvider) GetPrepareCommand(volDestination string) []string {
+// GetPrepareCommandToVolume returns the command to be executed before backup
+func (p *DefaultProvider) GetPrepareCommandToVolume(volDestination string) []string {
+	return nil
+}
+
+// GetPrepareCommandToPipe returns the command to be executed before backup
+func (p *DefaultProvider) GetPrepareCommandToPipe() []string {
 	return nil
 }

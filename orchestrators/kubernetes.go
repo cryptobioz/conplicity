@@ -303,7 +303,7 @@ func (o *KubernetesOrchestrator) ContainerExec(mountedVolumes *volume.MountedVol
 }
 
 // ContainerPrepareBackup executes a command in a container
-func (o *KubernetesOrchestrator) ContainerPrepareBackup(mountedVolumes *volume.MountedVolumes, command []string) (backupVolume *volume.Volume, err error) {
+func (o *KubernetesOrchestrator) ContainerPrepareBackup(mountedVolumes *volume.MountedVolumes, command []string, pw *io.PipeWriter) (err error) {
 	pr, pw := io.Pipe()
 	go func() {
 		var stderr bytes.Buffer

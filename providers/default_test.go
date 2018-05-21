@@ -19,6 +19,7 @@ func TestDefaultPrepareBackup(t *testing.T) {
 	}
 }
 
+/*
 func TestDefaultGetPrepareCommand(t *testing.T) {
 	mount := "/mnt"
 
@@ -27,3 +28,4 @@ func TestDefaultGetPrepareCommand(t *testing.T) {
 		t.Fatalf("Expected to get nil, got %s", got)
 	}
 }
+*/

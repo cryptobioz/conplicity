@@ -11,12 +11,21 @@ func (p *PostgreSQLProvider) GetName() string {
 	return "PostgreSQL"
 }
 
-// GetPrepareCommand returns the command to be executed before backup
-func (p *PostgreSQLProvider) GetPrepareCommand(volDestination string) []string {
+// GetPrepareCommandToVolume returns the command to be executed before backup
+func (p *PostgreSQLProvider) GetPrepareCommandToVolume(volDestination string) []string {
 	return []string{
 		"sh",
 		"-c",
 		"mkdir -p " + volDestination + "/backups && pg_dumpall --clean -Upostgres > " + volDestination + "/backups/all.sql",
+	}
+}
+
+// GetPrepareCommandToPipe returns the command to be executed before backup
+func (p *PostgreSQLProvider) GetPrepareCommandToPipe() []string {
+	return []string{
+		"sh",
+		"-c",
+		"pg_dumpall --clean -Upostgres",
 	}
 }
 

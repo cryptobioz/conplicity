@@ -3,6 +3,7 @@ package volume
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"reflect"
 	"strconv"
@@ -29,6 +30,7 @@ type Volume struct {
 	Config         *Config
 	MetricsHandler *metrics.PrometheusMetrics
 	HostBind       string
+	Pipe           *io.PipeReader
 }
 
 // Config is the volume's configuration parameters

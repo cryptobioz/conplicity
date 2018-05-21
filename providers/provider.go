@@ -2,6 +2,7 @@ package providers
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
@@ -12,7 +13,8 @@ import (
 // A Provider is an interface for providers
 type Provider interface {
 	GetName() string
-	GetPrepareCommand(string) []string
+	GetPrepareCommandToVolume(string) []string
+	GetPrepareCommandToPipe() []string
 	GetOrchestrator() orchestrators.Orchestrator
 	GetVolume() *volume.Volume
 	GetBackupDir() string
@@ -80,7 +82,7 @@ func GetProvider(o orchestrators.Orchestrator, v *volume.Volume) Provider {
 }
 
 // PrepareBackup sets up the data before backup
-func PrepareBackup(p Provider) (backupVolume *volume.Volume, err error) {
+func PrepareBackup(p Provider, pw *io.PipeWriter) (err error) {
 	p.SetVolumeBackupDir()
 
 	o := p.GetOrchestrator()
@@ -101,9 +103,16 @@ func PrepareBackup(p Provider) (backupVolume *volume.Volume, err error) {
 					"container": mountedVolume.ContainerID,
 				}).Debug("Container found using volume")
 
-				cmd := p.GetPrepareCommand(volDestination)
+				var cmd []string
+				if pw != nil {
+					log.Infof("Using pipe...")
+					cmd = p.GetPrepareCommandToPipe()
+				} else {
+					log.Infof("Using volume...")
+					cmd = p.GetPrepareCommandToVolume(volDestination)
+				}
 				if cmd != nil {
-					backupVolume, err = o.ContainerPrepareBackup(mountedVolume, cmd)
+					err = o.ContainerPrepareBackup(mountedVolume, cmd, pw)
 					if err != nil {
 						err = fmt.Errorf("failed to execute command in container: %v", err)
 						return

@@ -11,12 +11,21 @@ func (*MySQLProvider) GetName() string {
 	return "MySQL"
 }
 
-// GetPrepareCommand returns the command to be executed before backup
-func (p *MySQLProvider) GetPrepareCommand(volDestination string) []string {
+// GetPrepareCommandToVolume returns the command to be executed before backup in order to store the backup into the current volume
+func (p *MySQLProvider) GetPrepareCommandToVolume(volDestination string) []string {
 	return []string{
 		"sh",
 		"-c",
-		"mkdir -p " + volDestination + "/backups && mysqldump --all-databases --extended-insert --password=$MYSQL_ROOT_PASSWORD",
+		"mkdir -p " + volDestination + "/backups && mysqldump --all-databases --extended-insert --password=$MYSQL_ROOT_PASSWORD > " + volDestination + "/backups/dump.sql",
+	}
+}
+
+// GetPrepareCommandToPipe returns the command to be executed before backup in order to send the backup through a pipe
+func (p *MySQLProvider) GetPrepareCommandToPipe() []string {
+	return []string{
+		"sh",
+		"-c",
+		"mysqldump --all-databases --extended-insert --password=$MYSQL_ROOT_PASSWORD",
 	}
 }
 

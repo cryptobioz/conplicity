@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -45,23 +46,24 @@ func main() {
 }
 
 func backupVolume(o orchestrators.Orchestrator, vol *volume.Volume) (err error) {
+	e := engines.GetEngine(o, vol)
+
 	p := providers.GetProvider(o, vol)
 	log.WithFields(log.Fields{
 		"volume":   vol.Name,
 		"provider": p.GetName(),
 	}).Info("Found data provider")
 
-	vp, err := providers.PrepareBackup(p)
+	if e.StdinSupport() {
+		pr, pw := io.Pipe()
+		vol.Pipe = pr
+		go providers.PrepareBackup(p, pw)
+	} else {
+		err = providers.PrepareBackup(p, nil)
+	}
 	if err != nil {
 		err = fmt.Errorf("failed to prepare backup: %v", err)
 		return
-	}
-
-	var e engines.Engine
-	if vp != nil {
-		e = engines.GetEngine(o, vp)
-	} else {
-		e = engines.GetEngine(o, vol)
 	}
 
 	log.WithFields(log.Fields{

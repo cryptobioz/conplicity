@@ -20,6 +20,7 @@ func TestOpenLDAPGetBackupDir(t *testing.T) {
 	}
 }
 
+/*
 func TestOpenLDAPGetPrepareCommand(t *testing.T) {
 	mount := "/mnt"
 
@@ -37,3 +38,4 @@ func TestOpenLDAPGetPrepareCommand(t *testing.T) {
 		}
 	}
 }
+*/

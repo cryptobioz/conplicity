@@ -38,6 +38,11 @@ func (*ResticEngine) GetName() string {
 	return "Restic"
 }
 
+// StdinSupport returns true if the engine supports STDIN
+func (*ResticEngine) StdinSupport() bool {
+	return true
+}
+
 // Backup performs the backup of the passed volume
 func (r *ResticEngine) Backup() (err error) {
 
@@ -133,19 +138,34 @@ func (r *ResticEngine) init() (err error) {
 func (r *ResticEngine) resticBackup() (err error) {
 	c := r.Orchestrator.GetHandler()
 	v := r.Volume
-	state, _, err := r.launchRestic(
-		[]string{
-			"--hostname",
-			c.Hostname,
-			"-r",
-			v.Target,
-			"backup",
-			v.BackupDir,
-		},
-		[]*volume.Volume{
-			v,
-		},
-	)
+	var state int
+	if pr = v.Pipe; pr != nil {
+		state, _, err = r.launchRestic(
+			[]string{
+				"--hostname",
+				c.Hostname,
+				"-r",
+				v.Target,
+				"backup",
+				"--stdin",
+			},
+			[]*volume.Volume{},
+		)
+	} else {
+		state, _, err = r.launchRestic(
+			[]string{
+				"--hostname",
+				c.Hostname,
+				"-r",
+				v.Target,
+				"backup",
+				v.BackupDir,
+			},
+			[]*volume.Volume{
+				v,
+			},
+		)
+	}
 	if err != nil {
 		err = fmt.Errorf("failed to launch Restic to backup the volume: %v", err)
 	}
@@ -277,5 +297,5 @@ func (r *ResticEngine) launchRestic(cmd []string, volumes []*volume.Volume) (sta
 		"RESTIC_PASSWORD":       config.Restic.Password,
 	}
 
-	return r.Orchestrator.LaunchContainer(image, env, cmd, volumes)
+	return r.Orchestrator.LaunchContainer(image, env, cmd, volumes, pr)
 }

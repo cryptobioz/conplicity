@@ -1,6 +1,8 @@
 package orchestrators
 
 import (
+	"io"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/camptocamp/bivac/handler"
 	"github.com/camptocamp/bivac/volume"
@@ -10,10 +12,10 @@ import (
 type Orchestrator interface {
 	GetHandler() *handler.Bivac
 	GetVolumes() ([]*volume.Volume, error)
-	LaunchContainer(image string, env map[string]string, cmd []string, volumes []*volume.Volume) (state int, stdout string, err error)
+	LaunchContainer(image string, env map[string]string, cmd []string, volumes []*volume.Volume, pr *io.PipeReader) (state int, stdout string, err error)
 	GetMountedVolumes() ([]*volume.MountedVolumes, error)
 	ContainerExec(mountedVolumes *volume.MountedVolumes, command []string) error
-	ContainerPrepareBackup(mountedVolumes *volume.MountedVolumes, command []string) (backupVolume *volume.Volume, err error)
+	ContainerPrepareBackup(mountedVolumes *volume.MountedVolumes, command []string, pw *io.PipeWriter) (err error)
 }
 
 // GetOrchestrator returns the Orchestrator as specified in configuration
