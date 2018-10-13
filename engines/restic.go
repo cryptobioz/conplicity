@@ -104,14 +104,7 @@ func (r *ResticEngine) init() (err error) {
 	v := r.Volume
 
 	// Check if the repository already exists
-	state, _, err := r.launchRestic(
-		[]string{
-			"-r",
-			"%B/%P/%V",
-			"snapshots",
-		},
-		[]*volume.Volume{},
-	)
+	state, _, err := r.launchRestic([]string{"snapshots"}, []*volume.Volume{})
 	if err != nil {
 		err = fmt.Errorf("failed to launch Restic to verify the existence of the repository: %v", err)
 		return
@@ -124,16 +117,7 @@ func (r *ResticEngine) init() (err error) {
 	}
 
 	// Initialize the repository
-	state, _, err = r.launchRestic(
-		[]string{
-			"-r",
-			"%B/%P/%V",
-			"init",
-		},
-		[]*volume.Volume{
-			v,
-		},
-	)
+	state, _, err = r.launchRestic([]string{"init"}, []*volume.Volume{v})
 	if err != nil {
 		err = fmt.Errorf("failed to launch Restic to initialize the repository: %v", err)
 		return
@@ -150,17 +134,8 @@ func (r *ResticEngine) resticBackup() (err error) {
 	c := r.Orchestrator.GetHandler()
 	v := r.Volume
 	state, _, err := r.launchRestic(
-		[]string{
-			"--hostname",
-			c.Hostname,
-			"-r",
-			"%B/%P/%V",
-			"backup",
-			"%D",
-		},
-		[]*volume.Volume{
-			v,
-		},
+		[]string{"--hostname", c.Hostname, "backup", "%D"},
+		[]*volume.Volume{v},
 	)
 	if err != nil {
 		err = fmt.Errorf("failed to launch Restic to backup the volume: %v", err)
@@ -185,11 +160,7 @@ func (r *ResticEngine) resticBackup() (err error) {
 func (r *ResticEngine) verify() (err error) {
 	v := r.Volume
 	state, _, err := r.launchRestic(
-		[]string{
-			"-r",
-			"%B/%P/%V",
-			"check",
-		},
+		[]string{"check"},
 		[]*volume.Volume{},
 	)
 	if err != nil {
@@ -278,8 +249,6 @@ func (r *ResticEngine) forget() (err error) {
 
 	state, output, err := r.launchRestic(
 		[]string{
-			"-r",
-			"%B/%P/%V",
 			"forget",
 			"--prune",
 			"--keep-last",
@@ -302,12 +271,7 @@ func (r *ResticEngine) forget() (err error) {
 // snapshots lists snapshots
 func (r *ResticEngine) snapshots() (snapshots []Snapshot, err error) {
 	_, output, err := r.launchRestic(
-		[]string{
-			"-r",
-			"%B/%P/%V",
-			"snapshots",
-			"--json",
-		},
+		[]string{"snapshots", "--json"},
 		[]*volume.Volume{},
 	)
 	if err != nil {
@@ -364,5 +328,5 @@ func (r *ResticEngine) launchRestic(cmd []string, volumes []*volume.Volume) (sta
 		env[k] = v
 	}
 
-	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(cmd), volumes)
+	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(append(cmd, config.Restic.CommonArgs...)), volumes)
 }
