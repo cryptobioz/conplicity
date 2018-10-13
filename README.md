@@ -56,6 +56,7 @@ RClone Options:
 
 Duplicity Options:
       --duplicity-args=             Arguments to pass to duplicity engine. (default: --s3-use-new-style --ssh-options -oStrictHostKeyChecking=no --no-encryption) [$DUPLICITY_COMMON_ARGS]
+      --duplicity-backup-args=      Arguments to pass to duplicity engine when backup. (default: --full-if-older-than 15D --allow-source-mismatch --name %V %D %B/%P/%V) [$DUPLICITY_BACKUP_ARGS]
       --duplicity-image=            The duplicity docker image. (default: camptocamp/duplicity:latest) [$DUPLICITY_DOCKER_IMAGE]
       --full-if-older-than=         The number of days after which a full backup must be performed. (default: 15D) [$BIVAC_FULL_IF_OLDER_THAN]
 
