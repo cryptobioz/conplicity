@@ -82,5 +82,5 @@ func (r *RCloneEngine) launchRClone(cmd []string, volumes []*volume.Volume) (sta
 		env[k] = v
 	}
 
-	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(cmd), volumes)
+	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(append(cmd, config.RClone.CommonArgs...)), volumes)
 }
