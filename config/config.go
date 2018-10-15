@@ -27,7 +27,7 @@ type Config struct {
 	ProvidersFile    string            `short:"p" long:"providers-file" description:"Path to providers configuration file." env:"BIVAC_PROVIDERS_FILE" default:"/providers-config.default.toml"`
 
 	Restic struct {
-		CommonArgs []string `long:"restic-args" description:"Arguments to pass to restic engine." env:"RESTIC_COMMON_ARGS" default:"-r %B/%P/%V"`
+		CommonArgs string   `long:"restic-args" description:"Arguments to pass to restic engine." env:"RESTIC_COMMON_ARGS" default:"-r %B/%P/%V"`
 		BackupArgs []string `long:"restic-backup-args" description:"Arguments to pass to restic engine when backup." env:"RESTIC_BACKUP_ARGS" default:"%D --hostname %H"`
 		ForgetArgs []string `long:"restic-forget-args" description:"Arguments to pass to restic engine when launching forget." env:"RESTIC_FORGET_ARGS" default:"--keep-daily 15 --prune"`
 		Image      string   `long:"restic-image" description:"The restic docker image." env:"RESTIC_DOCKER_IMAGE" default:"restic/restic:latest"`

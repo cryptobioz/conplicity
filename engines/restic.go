@@ -40,17 +40,16 @@ func (*ResticEngine) GetName() string {
 }
 
 // replaceArgs replace arguments with their values
-func (r *ResticEngine) replaceArgs(args []string) (newArgs []string) {
+func (r *ResticEngine) replaceArgs(args string) (newArgs []string) {
 	log.Debugf("Replacing args, Input: %v", args)
-	for _, arg := range args {
-		arg = strings.Replace(arg, "%B", r.Volume.Config.TargetURL, -1)
-		arg = strings.Replace(arg, "%D", r.Volume.BackupDir, -1)
-		arg = strings.Replace(arg, "%H", r.Volume.Hostname, -1)
-		arg = strings.Replace(arg, "%N", r.Volume.Namespace, -1)
-		arg = strings.Replace(arg, "%P", r.Orchestrator.GetPath(r.Volume), -1)
-		arg = strings.Replace(arg, "%V", r.Volume.Name, -1)
-		newArgs = append(newArgs, arg)
-	}
+	args = strings.Replace(args, "%B", r.Volume.Config.TargetURL, -1)
+	args = strings.Replace(args, "%D", r.Volume.BackupDir, -1)
+	args = strings.Replace(args, "%H", r.Volume.Hostname, -1)
+	args = strings.Replace(args, "%N", r.Volume.Namespace, -1)
+	args = strings.Replace(args, "%P", r.Orchestrator.GetPath(r.Volume), -1)
+	args = strings.Replace(args, "%V", r.Volume.Name, -1)
+
+	newArgs = strings.Split(args, " ")
 	log.Debugf("Replacing args, Output: %v", newArgs)
 	return
 }
@@ -310,5 +309,7 @@ func (r *ResticEngine) launchRestic(cmd []string, volumes []*volume.Volume) (sta
 		env[k] = v
 	}
 
-	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(append(cmd, config.Restic.CommonArgs...)), volumes)
+	command := fmt.Sprintf("%s %s", strings.Join(cmd, " "), config.Restic.CommonArgs)
+
+	return r.Orchestrator.LaunchContainer(image, env, r.replaceArgs(command), volumes)
 }
