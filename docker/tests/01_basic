@@ -25,11 +25,13 @@ docker run -it --hostname=testing --name testing --rm -v /var/run/docker.sock:/v
 dump=$(docker run -it --rm -e RESTIC_PASSWORD=toto -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY restic/restic:latest -q -r s3:http://172.17.0.2:9000/bivac-testing/docker/testing/canary dump latest /var/lib/docker/volumes/canary/_data/canary)
 dump=${dump%$'\r'}
 if [[ $dump != $canary ]]; then
+  echo -e "\e[31m[-] Basic : Docker + Restic (canary short)\e[39m"
   test_valid=false
 fi
 dump=$(docker run -it --rm -e RESTIC_PASSWORD=toto -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY restic/restic:latest -q -r s3:http://172.17.0.2:9000/bivac-testing/docker/testing/canary dump latest /var/lib/docker/volumes/canary/_data/foo/bar/canary)
 dump=${dump%$'\r'}
 if [[ $dump != $canary ]]; then
+  echo -e "\e[31m[-] Basic : Docker + Restic (canary long)\e[39m"
   test_valid=false
 fi
 
@@ -37,6 +39,7 @@ fi
 dump=$(docker run -it --rm -e RESTIC_PASSWORD=toto -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY restic/restic:latest -q -r s3:http://172.17.0.2:9000/bivac-testing/docker/testing/mysql dump latest /var/lib/docker/volumes/mysql/_data/backups/all.sql)
 dump=${dump%$'\r'}
 if [[ $dump != *"Dump completed"* ]]; then
+  echo -e "\e[31m[-] Basic : Docker + Restic (mysql)\e[39m"
   test_valid=false
 fi
 
@@ -44,6 +47,7 @@ fi
 dump=$(docker run -it --rm -e RESTIC_PASSWORD=toto -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY restic/restic:latest -q -r s3:http://172.17.0.2:9000/bivac-testing/docker/testing/postgres dump latest /var/lib/docker/volumes/postgres/_data/backups/all.sql)
 dump=${dump%$'\r'}
 if [[ $dump != *"dump complete"* ]]; then
+  echo -e "\e[31m[-] Basic : Docker + Restic (postgresql)\e[39m"
   test_valid=false
 fi
 
