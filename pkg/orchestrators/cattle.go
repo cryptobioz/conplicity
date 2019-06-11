@@ -241,7 +241,7 @@ func (o *CattleOrchestrator) DeployAgent(image string, cmd []string, envs []stri
 
 	ws, err := websocket.Dial(u.String(), "", origin)
 	if err != nil {
-		err = fmt.Errorf("failed to open websocket with rancher server: %s", err)
+		err = fmt.Errorf("failed to open websocket with rancher server: %s {%+v}", err, hostAccess)
 		return
 	}
 	defer ws.Close()
