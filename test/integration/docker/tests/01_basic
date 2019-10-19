@@ -22,7 +22,7 @@ sleep 10
 
 # Start Bivac
 echo "[*] Starting Bivac..."
-docker run -d --hostname=testing --name testing --rm -v /var/run/docker.sock:/var/run/docker.sock:ro \
+docker run -d --hostname=testing --name testing -v /var/run/docker.sock:/var/run/docker.sock:ro \
   -e BIVAC_TARGET_URL=s3:http://${INTERNAL_IP}:9000/bivac-testing/docker \
   -e BIVAC_LOG_LEVEL=$2 \
   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
@@ -119,6 +119,7 @@ fi
 # Clean up environment
 echo "[*] Cleaning up environment..."
 docker kill testing
+docker rm testing
 docker volume rm canary
 docker kill mysql
 docker rm mysql

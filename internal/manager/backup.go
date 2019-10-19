@@ -78,9 +78,9 @@ func backupVolume(m *Manager, v *volume.Volume, force bool) (err error) {
 	}
 
 	if !useLogReceiver {
-		decodedOutput, err := base64.StdEncoding.DecodeString(strings.TrimSpace(output))
+		decodedOutput, err := base64.StdEncoding.DecodeString(strings.Replace(output, " ", "", -1))
 		if err != nil {
-			log.Errorf("failed to decode agent output of `%s` : %s -> `%s`", v.Name, err, output)
+			log.Errorf("failed to decode agent output of `%s` : %s -> `%s`", v.Name, err, strings.Replace(output, " ", "", -1))
 		} else {
 			var agentOutput utils.MsgFormat
 			err = json.Unmarshal(decodedOutput, &agentOutput)
@@ -88,7 +88,7 @@ func backupVolume(m *Manager, v *volume.Volume, force bool) (err error) {
 				log.WithFields(log.Fields{
 					"volume":   v.Name,
 					"hostname": v.Hostname,
-				}).Warningf("failed to unmarshal agent output: %s -> `%s`", err, output)
+				}).Warningf("failed to unmarshal agent output: %s -> `%s`", err, strings.TrimSpace(output))
 			}
 
 			m.updateBackupLogs(v, agentOutput)

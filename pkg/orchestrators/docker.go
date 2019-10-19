@@ -183,9 +183,19 @@ func (o *DockerOrchestrator) DeployAgent(image string, cmd []string, envs []stri
 		return
 	}
 	logs := strings.Split(stdout.String(), "\n")
-	if len(logs) > 1 {
-		output = logs[len(logs)-2]
+
+	// Remove empty lines from output
+	var sanitizedLogs []string
+	for _, line := range logs {
+		if line != "" && line != " " {
+			sanitizedLogs = append(sanitizedLogs, line)
+		}
 	}
+
+	if len(logs) > 1 {
+		output = logs[len(logs)-1]
+	}
+
 	success = true
 	return
 }
